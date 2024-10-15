@@ -44,7 +44,7 @@
                         <div id="logo">
                             <a href="feed.html"> 
                                 <img src="{% static "images/logo.png" %}" alt="" class="w-28 md:block hidden dark:!hidden">
-                                <img src="{% static "images/logo-light.png" %}" alt="" class="dark:md:block hidden">
+                                <img src="{% static "images/logo.png" %}" alt="" class="dark:md:block hidden">
                                 <img src="{% static "images/logo-mobile.png" %}" class="hidden max-md:block w-20 dark:!hidden" alt="">
                                 <img src="{% static "images/logo-mobile-light.png" %}" class="hidden dark:max-md:block w-20" alt="">
                             </a>
@@ -432,8 +432,8 @@
                                     <div class="p-4 py-5 flex items-center gap-4">
                                         <img src="{% static "images/avatars/avatar-2.jpg" %}" alt="" class="w-10 h-10 rounded-full shadow">
                                         <div class="flex-1">
-                                            <h4 class="text-sm font-medium text-black">Stell johnson</h4>
-                                            <div class="text-sm mt-1 text-blue-600 font-light dark:text-white/70">@mohnson</div>
+                                            <h4 class="text-sm font-medium text-black">{{ request.session.full_name }}</h4>
+                                            <div class="text-sm mt-1 text-blue-600 font-light dark:text-white/70">{{ request.session.email }}</div>
                                         </div>
                                     </div>
                                 </a>
@@ -486,7 +486,7 @@
                                         </div>
                                     </button>   
                                     <hr class="-mx-2 my-2 dark:border-gray-600/60">
-                                    <a href="form-login.html">
+                                    <a href="{% url 'logout' %}">
                                         <div class="flex items-center gap-2.5 hover:bg-secondery p-2 px-2.5 rounded-md dark:hover:bg-white/10"> 
                                             <svg class="w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
@@ -558,25 +558,25 @@
                             </li>
                             <li>
                                 <a href="pages.html">
-                                    <img src="{% static "assets/images/icons/page.png" %}" alt="pages" class="w-6">
+                                    <img src="{% static "images/icons/page.png" %}" alt="pages" class="w-6">
                                     <span> Pages </span> 
                                 </a>
                             </li>
                             <li>
                                 <a href="groups.html">
-                                    <img src="{% static "assets/images/icons/group.png" %}" alt="groups" class="w-6">
+                                    <img src="{% static "images/icons/group.png" %}" alt="groups" class="w-6">
                                     <span> Groups </span> 
                                 </a>
                             </li>
                             <li>
                                 <a href="market.html">
-                                    <img src="{% static "assets/images/icons/market.png" %}" alt="market" class="w-7 -ml-1">
+                                    <img src="{% static "images/icons/market.png" %}" alt="market" class="w-7 -ml-1">
                                     <span> market </span> 
                                 </a>
                             </li> 
                             <li>
                                 <a href="blog.html">
-                                    <img src="{% static "assets/images/icons/blog.png" %}" alt="blog" class="w-6">
+                                    <img src="{% static "images/icons/blog.png" %}" alt="blog" class="w-6">
                                     <span> blog </span> 
                                 </a>
                             </li> 

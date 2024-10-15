@@ -28,16 +28,21 @@ def login_view(request):
             password = form.cleaned_data['password']
             user = authenticate(request, username=email, password=password) 
             if user is not None:
-                login(request, user)
-                refresh = RefreshToken.for_user(user)
-                access_token = str(refresh.access_token)
-                request.session['access_token'] = access_token
-                if user.role == 'admin' and user.is_superuser and user.is_staff:
-                    return redirect('/admin/') 
+                if not user.is_active:  
+                    form.add_error(None, "Votre compte est désactivé. Veuillez contacter l'administrateur.")
                 else:
-                    return redirect('index')
+                    login(request, user)
+                    refresh = RefreshToken.for_user(user)
+                    access_token = str(refresh.access_token)
+                    request.session['access_token'] = access_token
+                    request.session['full_name'] = user.fullname
+                    request.session['email'] = user.email
+                    if user.role == 'admin' and user.is_superuser and user.is_staff:
+                        return redirect('/admin/') 
+                    else:
+                        return redirect('index')
             else:
-                form.add_error(None, "Invalid email or password.")
+                form.add_error(None, "invalid credentials or your account is not active.")
     else:
         form = UserLoginForm()
 
@@ -47,6 +52,8 @@ def logout_view(request):
     logout(request) 
     if 'access_token' in request.session:
         del request.session['access_token']
+        del request.session['full_name']
+        del request.session['email']
     return redirect('login') 
 
 @login_required
