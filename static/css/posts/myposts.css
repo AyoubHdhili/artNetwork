@@ -1,0 +1,142 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+}
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    margin-right: 180px; /* Move the entire container to the right */
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #444;
+}
+.post-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px; /* Space between cards */
+}
+.post-card {
+    flex: 1 1 calc(30% - 20px); /* 3 cards per row with space */
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+.post-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.post-title {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: #0066cc;
+}
+.post-content {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+.post-date {
+    font-size: 0.9rem;
+    color: #999;
+    margin-bottom: 10px;
+}
+.tags {
+    margin-bottom: 10px;
+}
+.tag {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    margin-right: 5px;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #3498db;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+.btn-delete {
+    background-color: #e74c3c;
+}
+.btn-delete:hover {
+    background-color: #c0392b;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* Center the modal vertically */
+    padding: 15px; /* Less padding for a smaller modal */
+    border: 1px solid #888;
+    width: 400px; /* Set a specific width */
+    border-radius: 10px;
+    text-align: center; /* Center the text */
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 800px) {
+    .post-card {
+        flex: 1 1 calc(45% - 20px); /* 2 cards per row on medium screens */
+    }
+}
+@media (max-width: 500px) {
+    .post-card {
+        flex: 1 1 100%; /* 1 card per row on small screens */
+    }
+    h1 {
+        font-size: 1.5rem; /* Smaller heading on mobile */
+    }
+}

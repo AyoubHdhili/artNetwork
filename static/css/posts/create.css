@@ -1,0 +1,156 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px; /* Add padding to give some space around */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Container for the form */
+.form-container {
+    max-width: 800px;
+    width: 100%;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+    color: #3498db;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Return button styles */
+.return-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #3498db;
+    transition: color 0.3s;
+}
+.return-button:hover {
+    color: #2980b9;
+}
+.return-button i {
+    margin-right: 8px; /* Space between icon and text */
+}
+
+/* Styling for labels and inputs */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+.form-input, .form-textarea, .form-file {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #f9f9f9; /* Change this to your desired color */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.form-input:focus, .form-textarea:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    outline: none;
+}
+.form-textarea {
+    resize: vertical;
+    height: 150px;
+}
+
+/* Image preview styles */
+.image-preview {
+    display: none;
+    width: 100%;
+    border: 2px dashed #3498db;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #3498db;
+}
+
+/* Submit button styles */
+button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background-color: #3498db;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+button[type="submit"]:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+/* Error messages */
+.field-errors {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    .form-container {
+        padding: 20px;
+    }
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #ddd;
+    }
+    .form-container {
+        background-color: #1e1e1e;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    .form-input, .form-textarea, .form-file, button[type="submit"] {
+        background-color: #333;
+        border: 2px solid #444;
+        color: #ddd;
+    }
+    label {
+        color: #ddd;
+    }
+    .image-preview {
+        border-color: #3498db;
+        color: #ddd;
+    }
+}
