@@ -54,16 +54,7 @@ class UserRegisterForm(forms.ModelForm):
         return cleaned_data
 
 
-class UserUpdateForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['email', 'fullname', 'phone', 'birthday', 'address', 'role']
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email is already in use.")
-        return email
 
 class UserLoginForm(forms.Form):
     email = forms.EmailField(
@@ -78,3 +69,26 @@ class UserLoginForm(forms.Form):
             'class': '!w-full !rounded-lg !bg-transparent !shadow-sm !border-slate-200 dark:!border-slate-800 dark:!bg-white/5',
         }),
     )
+
+class UserUpdateForm(forms.ModelForm):
+    birthday = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'type': 'date',  
+            'class': '!w-full !rounded-lg !bg-transparent !shadow-sm !border-slate-200 dark:!border-slate-800 dark:!bg-white/5',
+        }),
+        required=False 
+    )
+
+    class Meta:
+        model = User
+        fields = ['fullname', 'phone', 'birthday', 'address', 'user_photo']  
+
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['user_photo'].required = False
+    
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone and (len(phone) != 8 or not re.match(r'^\d{8}$', phone)):
+            raise forms.ValidationError("The phone number must contain exactly 8 digits.")
+        return phone

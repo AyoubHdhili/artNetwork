@@ -29,6 +29,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
+   
+    user_photo = models.ImageField(upload_to='user_photos/', blank=True, null=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
@@ -36,6 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
     def toggle_active(self):
         self.is_active = not self.is_active
         self.save()
