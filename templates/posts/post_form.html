@@ -1,0 +1,225 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <br><br>
+    <title>Create a New Post</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px; /* Add padding to give some space around */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+
+        /* Container for the form */
+        .form-container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: #3498db;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for labels and inputs */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        .form-input, .form-textarea, .form-file {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #333;
+            background-color: #f9f9f9; /* Change this to your desired color */
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-input:focus, .form-textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+        .form-textarea {
+            resize: vertical;
+            height: 150px;
+        }
+
+        /* Image preview styles */
+        .image-preview {
+            display: none;
+            width: 100%;
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #3498db;
+        }
+
+        /* Submit button styles */
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        button[type="submit"]:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Error messages */
+        .field-errors {
+            color: red;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .form-container {
+                padding: 20px;
+            }
+        }
+
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #ddd;
+            }
+            .form-container {
+                background-color: #1e1e1e;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            }
+            .form-input, .form-textarea, .form-file, button[type="submit"] {
+                background-color: #333;
+                border: 2px solid #444;
+                color: #ddd;
+            }
+            label {
+                color: #ddd;
+            }
+            .image-preview {
+                border-color: #3498db;
+                color: #ddd;
+            }
+        }
+          /* Return button styles */
+  .return-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #3498db;
+    transition: color 0.3s;
+}
+.return-button:hover {
+    color: #2980b9;
+}
+.return-button i {
+    margin-right: 8px; /* Space between icon and text */
+}
+
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <a href="javascript:history.back()" class="return-button"><i class="fas fa-arrow-left"></i> Return</a>
+        <h1>Create a New Post</h1>
+    
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required class="form-input" placeholder="Enter post title">
+
+            <label for="content">Content</label>
+            <textarea id="content" name="content" required class="form-textarea" placeholder="What's on your mind?"></textarea>
+
+            <label for="image">Upload Image</label>
+            <input type="file" id="image" name="image" accept="image/*" class="form-file" onchange="previewImage(event)">
+
+            <div class="image-preview" id="imagePreview">
+                <p>Image Preview</p>
+                <img id="preview" src="" alt="Image Preview" style="max-width: 100%; border-radius: 10px; display: none;">
+            </div>
+
+            <div class="field-errors">
+                {% for error in form.non_field_errors %}
+                    <p class="field-errors">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <button type="submit">Post</button>
+        </form>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('preview');
+            const imagePreviewContainer = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    imagePreviewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+                imagePreviewContainer.style.display = 'none';
+            }
+        }
+    </script>
+{% endblock %}

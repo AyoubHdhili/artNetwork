@@ -1,0 +1,389 @@
+/* styles.css */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.post-card {
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.post-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Post header */
+.post-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info img {
+    border-radius: 50%;
+    width: 40px; /* Adjust size as needed */
+    height: 40px; /* Adjust size as needed */
+    margin-right: 10px;
+}
+
+.user-info h4 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+.user-info .date {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+/* Dropdown menu for post options */
+.post-options {
+    position: relative;
+}
+
+.post-options button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #888;
+    transition: color 0.3s ease;
+}
+
+.post-options button:hover {
+    color: #333;
+}
+
+/* Dropdown */
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.dropdown nav {
+    padding: 10px;
+}
+
+.dropdown nav a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown nav a:hover {
+    background: #f4f4f4;
+}
+
+/* Post content */
+.post-content {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.post-content p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    max-height: 400px; /* Prevent images from becoming too tall */
+    object-fit: cover; /* Ensures image fits neatly within the bounds */
+}
+
+/* Add Post Button */
+.add-post-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 15px 25px;
+    background-color: #3498db;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-post-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.7); /* Darker background for better contrast */
+    backdrop-filter: blur(5px); /* Slight blur effect for background */
+}
+
+.modal-content {
+    background-color: #ffffff; /* White background */
+    margin: 10% auto; /* Centered with slight adjustment */
+    padding: 30px; /* More padding for a spacious feel */
+    border-radius: 10px; /* Rounded corners for a softer look */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); /* Deeper shadow for more depth */
+    width: 90%; /* Responsive width */
+    max-width: 500px; /* Maximum width for larger screens */
+}
+
+.close {
+    color: #666; /* Lighter gray color */
+    float: right;
+    font-size: 30px; /* Slightly larger font size for better visibility */
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #e74c3c; /* Red color on hover/focus for emphasis */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    display: flex; /* Flexbox for better alignment */
+    justify-content: space-between; /* Space between title and close button */
+    align-items: center; /* Center align items vertically */
+    border-bottom: 1px solid #e0e0e0; /* Underline for header */
+    padding-bottom: 15px; /* Spacing below header */
+    font-size: 20px; /* Slightly larger font for title */
+    font-weight: bold; /* Bold title for emphasis */
+    color: #333; /* Darker color for readability */
+}
+
+.modal-body {
+    margin-top: 15px; /* Spacing above body content */
+    font-family: 'Arial', sans-serif; /* Consistent font family */
+    font-size: 16px; /* Body text size */
+    color: #555; /* Softer color for body text */
+}
+
+.modal-buttons {
+    display: flex; /* Flexbox for buttons alignment */
+    justify-content: space-between; /* Space between buttons */
+    margin-top: 20px; /* Spacing above buttons */
+}
+
+.btn {
+    padding: 12px 20px; /* Adequate padding for larger click area */
+    font-size: 16px; /* Font size for readability */
+    font-weight: bold; /* Bold text for emphasis */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Slightly rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+.btn.confirm {
+    background-color: #3498db; /* Blue background for confirm button */
+    color: white; /* White text color */
+}
+
+.btn.confirm:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+.btn.cancel {
+    background-color: #e74c3c; /* Red background for cancel button */
+    color: white; /* White text color */
+}
+
+.btn.cancel:hover {
+    background-color: #c0392b; /* Darker red on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .post-header h4 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #ddd;
+    }
+
+    .post-card {
+        background-color: #1e1e1e;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .post-header h4,
+    .post-content p {
+        color: #ddd;
+    }
+}
+
+/* Additional styles for comments and forms */
+.comments-section {
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.comment {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    position: relative; /* For positioning delete link */
+}
+
+.comment strong {
+    color: #333;
+}
+
+.comment span {
+    font-size: 0.8em;
+    color: #aaa;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Add Comment Form styles */
+.add-comment {
+    margin-top: 15px;
+}
+
+.comment-form {
+    display: flex;
+    align-items: center;
+}
+
+.comment-form input[type="text"],
+.comment-form textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.comment-form button {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.comment-form button:hover {
+    background-color: #4cae4c;
+}
+
+/* Delete comment link styles */
+.delete-comment {
+    color: red;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+.edit-comment {
+    color: rgb(65, 212, 7);
+    position: absolute;
+    right: 80px;
+    top: 10px;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.delete-comment:hover {
+    text-decoration: underline;
+}
+.comments-section {
+    margin-top: 20px;
+}
+
+.comments-wrapper {
+    max-height: 200px; /* Set a max height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ddd; /* Optional: add a border for visibility */
+    padding: 10px; /* Optional: add some padding */
+    background-color: #f9f9f9; /* Optional: set a background color */
+}
+.emoji-picker {
+    position: absolute; /* Adjust according to your layout */
+    border: 1px solid #ccc;
+    background: white;
+    z-index: 1000; /* Make sure it's on top */
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.emoji {
+    cursor: pointer;
+    margin: 5px;
+    font-size: 24px; /* Size of emojis */
+}
