@@ -45,7 +45,7 @@
      
     
             <!-- form -->
-            <form method="POST" class="space-y-7 text-sm text-black font-medium dark:text-white">
+            <form method="POST" class="space-y-7 text-sm text-black font-medium dark:text-white" novalidate>
                 {% csrf_token %}
                 {% if form.non_field_errors %}
                 <div class="text-red-500">{{ form.non_field_errors }}</div>
@@ -93,7 +93,7 @@
                         <div class="max-w-xl w-full mx-auto pb-32 px-5 z-30 relative"  uk-scrollspy="target: > *; cls: uk-animation-scale-up; delay: 100 ;repeat: true" > 
                             <img class="w-12" src="{% static "images/post/img-3.png" %}" alt="Socialite html template">
                             <h4 class="!text-white text-2xl font-semibold mt-7"  uk-slideshow-parallax="y: 600,0,0">  Connect With Friends </h4> 
-                            <p class="!text-white text-lg mt-7 leading-8"  uk-slideshow-parallax="y: 800,0,0;"> This phrase is more casual and playful. It suggests that you are keeping your friends updated on what’s happening in your life.</p>   
+                            <p class="!text-white text-lg mt-7 leading-8"  uk-slideshow-parallax="y: 800,0,0;">Find inspiration and practical ideas for all your daily projects on PixelMuse.</p>   
                         </div> 
                     </div>
                     <div class="w-full h-96 bg-gradient-to-t from-black absolute bottom-0 left-0"></div>
