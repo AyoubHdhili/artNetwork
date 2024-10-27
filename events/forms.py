@@ -19,6 +19,8 @@ class EventAddForm(forms.ModelForm):
             }),
         }
 
+    image = forms.ImageField(required=True)
+
     def clean_start_date(self):
         start_date = self.cleaned_data.get('start_date')
         if start_date <= timezone.now(): 
@@ -54,6 +56,8 @@ class EventUpdateForm(forms.ModelForm):
                 'class': '!w-full !rounded-lg !bg-transparent !shadow-sm !border-slate-200 dark:!border-slate-800 dark:!bg-white/5'
             }),
         }
+
+    image = forms.ImageField(required=True)
 
     def clean_start_date(self):
         start_date = self.cleaned_data.get('start_date')

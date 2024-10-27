@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
+    <div class="flex max-lg:flex-col 2xl:gap-12 gap-10 2xl:max-w-[1220px] max-w-[1065px] mx-auto" id="js-oversized">
+        <div class="flex-1">
+            <div class="page-heading">
+                <h1 class="page-title">Text to Image 🤖!</h1>
+            </div>
+            
+            <div tabindex="-1" uk-slider="finite:true">
+                <div class="uk-slider-container pb-1">
+                    <form id="imageForm" method="post" action="{% url 'generate_image' %}">
+                        {% csrf_token %}
+                        <label for="prompt">Description of the image:</label>
+                        <textarea class="!w-full !rounded-lg !bg-transparent !shadow-sm !border-slate-200 dark:!border-slate-800 dark:!bg-white/5 loading-input" id="prompt" name="prompt" required></textarea>
+                        <br>
+                        <button type="submit" class="bg-white py-2 px-5 rounded-full shadow-md font-semibold text-sm dark:bg-dark2">Generate Image</button>
+                    </form>
+                
+                    <div id="imageResult">
+                        {% if image_url %}
+                            <br>
+                            <h2>Generated Image:</h2>
+                            <img src="{{ image_url }}" alt="Generated Image" class="styled-image">
+                            <a href="{{ image_url }}" download="generated_image.png" class="download-icon" title="Download Image">
+                                <img src="{% static 'images/download-icon.jpg' %}" alt="Download" class="download-icon-img">
+                            </a>
+                        {% else %}
+                            <div id="loadingSpinner" style="display: none;">
+                                <div class="loader"></div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="2xl:w-[380px] lg:w-[330px] w-full">
+            <div class="lg:space-y-6 space-y-4 lg:pb-8">
+                <!-- Stable Diffusion Information -->
+                <div class="box overflow-hidden">
+                    <div class="w-full h-24 relative" style="margin-top: 100px;">
+                        <img src="{% static 'images/stable.jpg' %}" alt="" class="w-full h-full absolute object-cover">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-base">Stable Diffusion</h3>
+                        <p class="text-sm mt-1">Stable Diffusion is a latent text-to-image diffusion model capable of generating photorealistic images from any text input.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        const form = document.getElementById('imageForm');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            
+            loadingSpinner.style.display = 'block';
+
+            const response = await fetch("{% url 'generate_image' %}", {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            loadingSpinner.style.display = 'none'; 
+
+            if (data.image_url) {
+                document.getElementById('imageResult').innerHTML = `
+                    <h2>Generated Image:</h2>
+                    <img src="${data.image_url}" alt="Generated Image" class="styled-image">
+                    <a href="${data.image_url}" download="generated_image.png" class="download-icon" title="Download Image">
+                        <img src="{% static 'images/download-icon.jpg' %}" alt="Download" class="download-icon-img">
+                    </a>
+                `;
+            } else {
+                alert(data.error || 'An error occurred.');
+            }
+        });
+
+      
+    </script>
+    <style>
+        .custom-file-input {
+    cursor: pointer; 
+}
+
+.custom-file-input:hover {
+    background-color: #f0f0f0; 
+}
+
+        .card-list-divider {
+    margin: 2rem auto; 
+    border: none;
+    border-top: 1px solid #e5e5e5; 
+    background: transparent;
+    width: 90%; 
+}
+        #js-oversized {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .loading-input {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-input::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            animation: shimmer 1.5s infinite;
+            z-index: 1;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: 200px 0;
+            }
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3; 
+            border-top: 8px solid #3498db; 
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto; 
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .styled-image {
+            border: 5px solid #3498db; 
+            border-radius: 15px; 
+            margin-left: 30px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-icon {
+            margin-left: 10px;
+        }
+
+        .download-icon-img {
+            width: 20px; 
+            height: 20px; 
+            vertical-align: middle;
+        }
+
+        .card-list-divider {
+            margin: 2rem 0;
+            border: none;
+            border-top: 1px solid #e5e5e5; 
+            background: transparent;
+        }
+    </style>
+</main>
+{% endblock %}

@@ -67,8 +67,12 @@
                     </svg>
                 </label>
             </div>
-
+            {% if form.image.errors %}
+            <div class="text-red-500">{{ form.image.errors }}</div>
+        {% endif %}
+        <br>
             <button type="submit" class="button bg-primary text-white w-full">Create Event</button>
+            <br>
         </form>
     </div>
 </main>
