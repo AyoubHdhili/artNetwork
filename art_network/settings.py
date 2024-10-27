@@ -12,15 +12,18 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-DEEP_AI_API_KEY = 'f9bc4898-15bb-40d7-9e25-9eb6c8bcbf2e'
-HUGGING_FACE_API_KEY = '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'
+
+HUGGING_FACE_API_KEY = os.getenv('HUGGING_FACE_API_KEY')
 STABLE_DIFFUSION_URL = 'https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4'
 
 # Quick-start development settings - unsuitable for production
