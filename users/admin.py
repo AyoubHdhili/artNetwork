@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import User
-
+from reclamations.models import Reclamation
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'fullname', 'is_active_badge', 'role', 'is_staff')
 
@@ -36,4 +36,10 @@ class UserAdmin(admin.ModelAdmin):
         return super().add_view(request, form_url, extra_context)
 
 
+class ReclamationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'description', 'created_at')
+    search_fields = ('description',)
+    ordering = ('-created_at',)
+
+admin.site.register(Reclamation, ReclamationAdmin)
 admin.site.register(User, UserAdmin)
