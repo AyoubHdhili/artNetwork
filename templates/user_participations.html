@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
+    <div class="2xl:max-w-[1220px] max-w-[1065px] mx-auto">
+        <div class="page-heading flex items-center justify-between">
+            <h1 class="page-title">My Participation</h1>
+        </div>
+
+        {% if participations %}
+            <div class="relative" tabindex="-1" uk-slider="finite:true">
+                <div class="uk-slider-container pb-1">
+                    <ul class="uk-slider-items grid-small">
+                        {% for pr in participations %}
+                            <li class="lg:w-1/4 sm:w-1/3 w-1/2">
+                                <div class="card flex flex-col h-full"> 
+                                    <a href="{% url 'event_detail' pr.event.id %}">
+                                        <div class="card-media h-32">
+                                            <img src="{{ pr.event.image.url }}" alt="{{ pr.event.title }}">
+                                            <div class="card-overly"></div>
+                                        </div>
+                                    </a>
+                                    <div class="card-body flex-1 flex flex-col p-4">
+                                        <p class="text-xs font-medium text-teal-600 mb-1">{{ pr.event.start_date|date:"d M Y" }}</p>
+                                        <a href="{% url 'event_detail' pr.event.id %}">
+                                            <h4 class="card-title text-sm">{{ pr.event.title }}</h4>
+                                        </a>
+                                        <p class="card-text text-black mt-2">Date of participation: {{ pr.participation_date|date:"d M Y" }}</p>
+                                        <div class="card-list-info text-xs mt-1">
+                                            <div>Created by {{ pr.event.creator.fullname }}</div>
+                                        </div>
+                                        <div class="flex gap-2 mt-auto"> 
+                                            {% if pr.event.start_date|date:"Y-m-d" > current_date|date:"Y-m-d" %}
+                                                <a href="{% url 'cancel_reservation' pr.id %}" class="button bg-danger text-white flex-1">Cancel Reservation</a>
+                                            {% else %}
+                                                <p class="text-red-600 flex-1">Event has already started</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </li> 
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Slide nav icons -->
+                {% if participations|length > 4 %}
+                    <a class="nav-prev !top-20" href="#" uk-slider-item="previous">
+                        <ion-icon name="chevron-back" class="text-2xl"></ion-icon>
+                    </a>
+                    <a class="nav-next !top-20" href="#" uk-slider-item="next">
+                        <ion-icon name="chevron-forward" class="text-2xl"></ion-icon>
+                    </a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="text-center mt-8">
+                <p>There are no participations.</p>
+            </div>
+        {% endif %}
+    </div>
+    <style>
+        .bg-danger {
+    background-color: #dc3545;
+    color: #fff; 
+    padding: 0.5rem 1rem; 
+    border-radius: 4px; 
+    text-align: center;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+}
+
+.bg-danger:hover {
+    background-color: #c82333; 
+}
+
+    </style>
+</main>
+{% endblock %}
