@@ -1,22 +1,19 @@
 {% extends "index.html" %}
 {% load static %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<main>
     <br>
     <br>
     <title>Update Post - {{ post.title }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/posts/edit.css' %}">
-</head>
-<body>
+
     <div class="container">
         <h1>Update Post</h1>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            
+            <!-- Title Field -->
             <div class="form-group">
                 <label for="title" class="form-label">Title:<span style="color: red;">*</span></label>
                 <input type="text" id="title" name="title" class="form-control" value="{{ post.title }}" >
@@ -27,15 +24,35 @@
                 </div>
             </div>
 
+            <!-- Content Field -->
             <div class="form-group">
                 <label for="content" class="form-label">Content:<span style="color: red;">*</span></label>
-                <textarea id="content" name="content" class="form-control" rows="5" >{{ post.content }}</textarea>
+                <textarea id="content" name="content" class="form-control" rows="5">{{ post.content }}</textarea>
                 <div class="field-errors">
                     {% for error in form.content.errors %}
                         <p class="field-errors">{{ error }}</p>
                     {% endfor %}
                 </div>
             </div>
+
+            <!-- Category Field -->
+            <div class="form-group">
+                <label for="category" class="form-label">Category:<span style="color: red;">*</span></label>
+                <select id="category" name="category" class="form-control">
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if post.category.id == category.id %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="field-errors">
+                    {% for error in form.category.errors %}
+                        <p class="field-errors">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Image Field -->
             <div class="form-group">
                 <label for="image" class="form-label">Image:<span style="color: red;">*</span></label>
                 <input type="file" id="image" name="image" class="form-control">
@@ -51,10 +68,13 @@
                     </div>
                 {% endif %}
             </div>
+
+            <!-- Submit Button -->
             <button type="submit" class="submit-btn">Update Post</button>
         </form>
-        <a href="{% url 'post_list' %}" class="cancel-btn">Cancel</a>  <!-- Link back to the post detail page -->
+        
+        <!-- Cancel Button -->
+        <a href="{% url 'post_list' %}" class="cancel-btn">Cancel</a>  <!-- Link back to the post list page -->
     </div>
-</body>
-</html>
+</main>
 {% endblock %}
