@@ -22,9 +22,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('users.urls')),
     path('reclamations/',include('reclamations.urls')),
+    path('generate/',include('generator.urls')),
     path('events/',include('events.urls')),
     path('posts/',include('posts.urls')),
     path('Participation/',include('Participation.urls')),
+    path('comments/', include('comments.urls')), 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

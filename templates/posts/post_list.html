@@ -1,34 +1,49 @@
 {% extends "index.html" %}
 {% load static %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<main>
     <title>Posts - Add New</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/posts/styles.css' %}">
-    
-</head>
-<body>
-    <div class="container">
-    </br>
-</br>
 
+    <div class="container">
+        <br><br>
+        
         <!-- Add Post Button -->
         <a href="{% url 'post_create' %}" class="add-post-btn">Create New Post</a>
 
+      <!-- Category Filter with Modern UI -->
+<div class="category-filter">
+    <form method="GET" action="{% url 'post_list' %}">
+        <div class="filter-wrapper">
+            <label for="category" class="filter-label">Filter by Category:</label>
+            <div class="select-wrapper">
+                <select name="category" id="category" class="styled-select" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+        <!-- Posts List -->
         <div class="posts">
             {% for post in posts %}
                 <div class="post-card">
+
                     <!-- Post Header -->
                     <div class="post-header">
                         <div class="user-info">
-                            {% if post.author.user_photo %}  <!-- Check if the user has a profile picture -->
+                            {% if post.author.user_photo %}
                                 <img src="{{ post.author.user_photo.url }}" alt="Profile Picture">
                             {% else %}
-                                <img src="{% static 'default_profile_pic.png' %}" alt="Default Profile Picture">  <!-- Default profile picture -->
+                                <img src="{% static 'default_profile_pic.png' %}" alt="Default Profile Picture">
                             {% endif %}
                             <div>
                                 <h4>{{ post.author.fullname }}</h4>
@@ -36,63 +51,169 @@
                             </div>
                         </div>
                         <div class="post-options">
-                            <button type="button" aria-label="Post options" onclick="toggleDropdown(this)"><i class="fas fa-ellipsis-h"></i></button>
+                            <button type="button" aria-label="Post options" onclick="toggleDropdown(this)">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
                             <div class="dropdown">
                                 <nav>
-                                    <a href="#"> <i class="fas fa-bookmark"></i> Add to favorites </a>
-                                    {% if post.author == request.user %}  <!-- Check if the logged-in user is the author -->
-                                    <a href="{% url 'post_update' post.pk %}"> <i class="fas fa-edit"></i> Edit </a>
-                                    <a href="javascript:void(0);" onclick="openModal('{{ post.pk }}')" class="text-red-400 hover:bg-red-50 dark:hover:bg-red-500/50"> 
-                                        <i class="fas fa-trash-alt"></i> Delete 
-                                    </a>
+                                    {% if post.author == request.user %}
+                                        <a href="{% url 'post_update' post.pk %}"><i class="fas fa-edit"></i> Edit</a>
+                                        <a href="javascript:void(0);" onclick="openModal('{{ post.pk }}')" class="text-red-400 hover:bg-red-50 dark:hover:bg-red-500/50">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </a>
                                     {% endif %}
                                 </nav>
                             </div>
                         </div>
                     </div>
+                    
                     <!-- Post Content -->
                     <div class="post-content">
+                        <!-- Display the post category prominently on the top right -->
+                        <div class="post-category">{{ post.category.name }}</div>
                         <h4>{{ post.title }}</h4>
                         <p>{{ post.content }}</p>
                         {% if post.image %}
                             <img src="{{ post.image.url }}" alt="Post Image" loading="lazy">
+                            <button onclick="getAIImageDescription({{ post.id }})">Get Image Description</button>
+                            <ul id="image-suggestions-{{ post.id }}"></ul>
                         {% endif %}
+
+                        
+                    </div>
+                                   <!-- Comments Section -->
+             <!-- Comments Section -->
+             <div class="comments-section" id="comments-{{ post.id }}">
+                <h4>Comments:</h4>
+                <div class="comments-wrapper">
+                    <div class="comments">
+                        {% for comment in post.comments.all %}
+                            <div class="comment" id="comment-{{ comment.id }}">
+                                <div class="user-info">
+                                    {% if post.author.user_photo %}  <!-- Check if the user has a profile picture -->
+                                    <img src="{{ post.author.user_photo.url }}" alt="Profile Picture">
+                                {% else %}
+                                    <img src="{% static 'default_profile_pic.png' %}" alt="Default Profile Picture">  <!-- Default profile picture -->
+    
+                                {% endif %}
+                                </div>
+                                <strong>{{ comment.author.fullname }}</strong>:
+                                <p class="comment-content">{{ comment.content }}</p>
+                                <span>{{ comment.created_at|date:"d M Y H:i" }}</span>
+                                {% if comment.author == user or post.author == user %}
+                                    <a href="#" class="edit-comment" data-id="{{ comment.id }}">Edit</a>
+                                    <a href="#" class="delete-comment" data-id="{{ comment.id }}">Delete</a>
+                                {% endif %}
+                                <div class="edit-comment-container" style="display: none;">
+                                    <input type="text" class="edit-comment-input" value="{{ comment.content }}">
+                                    <button class="save-edit" data-id="{{ comment.id }}">Save</button>
+                                    <button class="cancel-edit">Cancel</button>
+                                </div>
+                                
+                                <!-- Reply Form -->
+                                <div class="reply-form">
+                                    <form action="{% url 'add_reply' comment.id %}" method="post" class="reply-form">
+                                        {% csrf_token %}
+                                        <input type="text" name="content" placeholder="Add a reply..." required>
+                                        <button type="submit">Reply</button>
+                                    </form>
+                                </div>
+                                
+                                <!-- Replies -->
+                                <div class="replies">
+                                    {% for reply in comment.replies.all %}
+                                        <div class="reply" id="reply-{{ reply.id }}">
+                                            <strong>{{ reply.author.fullname }}</strong>:
+                                            <p class="reply-content">{{ reply.content }}</p>
+                                            <small class="reply-timestamp">{{ reply.created_at|date:"d M Y H:i" }}</small>
+                                            {% if reply.author == user or post.author == user %}
+                                                <a href="#" class="edit-reply" data-id="{{ reply.id }}">Edit</a>
+                                                <a href="#" class="delete-reply" data-id="{{ reply.id }}">Delete</a>
+                                            {% endif %}
+                                            <div class="edit-reply-container" style="display: none;">
+                                                <input type="text" class="edit-reply-input" value="{{ reply.content }}">
+                                                <button class="save-reply-edit" data-id="{{ reply.id }}">Save</button>
+                                                <button class="cancel-reply-edit">Cancel</button>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <p class="no-replies">No replies yet.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p>No comments yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+
+                    <!-- Add Comment Form -->
+                    <div class="add-comment">
+                      <!--    <button type="button" onclick="fetchSuggestions(this)" data-post-id="{{ post.id }}">Get AI Suggestions</button>-->
+
+                        <ul id="suggestions-{{ post.id }}"></ul> <!-- Suggestions list -->
+                        <form class="comment-form" action="{% url 'add_comment' post.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="content" class="commentInput" id="commentInput" placeholder="Add a comment...">
+                            <button type="button" class="emojiButton">😊</button> <!-- Use class for emoji button -->
+                            <div class="emoji-picker" style="display: none;">
+                                <span class="emoji" data-emoji="😀">😀</span>
+                                <span class="emoji" data-emoji="😀">😀</span>
+                                <span class="emoji" data-emoji="😅">😅</span>
+                                <span class="emoji" data-emoji="😍">😍</span>
+                                <span class="emoji" data-emoji="😂">😂</span>
+                                <span class="emoji" data-emoji="🤔">🤔</span>
+                                <span class="emoji" data-emoji="😎">😎</span>
+                                <span class="emoji" data-emoji="😢">😢</span>
+                                <span class="emoji" data-emoji="🤯">🤯</span>
+                                <span class="emoji" data-emoji="🙌">🙌</span>
+                                <span class="emoji" data-emoji="🎉">🎉</span>
+                                <span class="emoji" data-emoji="👀">👀</span>
+                                <span class="emoji" data-emoji="✨">✨</span>
+                                <span class="emoji" data-emoji="💖">💖</span>
+                                <span class="emoji" data-emoji="🥳">🥳</span>
+                                <span class="emoji" data-emoji="🙏">🙏</span>
+
+                                <!-- More emojis -->
+                            </div>
+                            <button type="submit">Add Comment</button>
+                        </form>
+                        <div id="error-message" style="color: red;"></div> 
                     </div>
                 </div>
             {% endfor %}
         </div>
+                </div>
+           
+        </div>
     </div>
 
-     <!-- Modal HTML Structure -->
-<div id="deleteModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span id="postTitle">Delete Confirmation</span>
-            <span class="close" onclick="closeModal()">&times;</span>
-        </div>
-        <div class="modal-body">
-            <p>Are you sure you want to delete this post? This action cannot be undone.</p>
-            <form id="deleteForm" method="POST">
-                {% csrf_token %}
-                <div class="modal-buttons">
-                    <button type="submit" class="btn confirm">Confirm</button>
-                    <button type="button" class="btn cancel" onclick="closeModal()">Cancel</button>
-                </div>
-            </form>
+    <!-- Modal HTML Structure -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="postTitle">Delete Confirmation</span>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+                <form id="deleteForm" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-buttons">
+                        <button type="submit" class="btn confirm">Confirm</button>
+                        <button type="button" class="btn cancel" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
     <script>
         function toggleDropdown(button) {
             const dropdown = button.nextElementSibling;
-
-            if (dropdown.style.display === "block") {
-                dropdown.style.display = "none";
-            } else {
-                dropdown.style.display = "block";
-            }
-
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
             document.querySelectorAll('.dropdown').forEach(function(otherDropdown) {
                 if (otherDropdown !== dropdown) {
                     otherDropdown.style.display = "none";
@@ -104,14 +225,8 @@
             const modal = document.getElementById("deleteModal");
             const deleteForm = document.getElementById("deleteForm");
             const postTitle = document.getElementById("postTitle");
-
-            // Display the modal
             modal.style.display = "block";
-
-            // Update the form action with the correct post ID
-            deleteForm.action = "/posts/" + postId + "/delete/"; 
-
-            // Update the post title in the modal
+            deleteForm.action = "/posts/" + postId + "/delete/";
             postTitle.textContent = postTitleText;
         }
 
@@ -128,6 +243,371 @@
             }
         });
     </script>
-</body>
-</html>
+
+                   
+                 
+ 
+
+    <!-- Modal HTML Structure -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="postTitle">Delete Confirmation</span>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+                <form id="deleteForm" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-buttons">
+                        <button type="submit" class="btn confirm">Confirm</button>
+                        <button type="button" class="btn cancel" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+function getAIImageDescription(postId) {
+    fetch(`/comments/suggestions/${postId}/`)  // Adjust the URL to match your route
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const suggestionsList = document.getElementById(`image-suggestions-${postId}`);
+            suggestionsList.innerHTML = ''; // Clear previous suggestions
+
+            if (data.suggestions && data.suggestions.length > 0) {
+                data.suggestions.forEach(suggestion => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = suggestion; // Assuming suggestions are strings
+                    suggestionsList.appendChild(listItem);
+                });
+            } else {
+                const listItem = document.createElement('li');
+                listItem.textContent = 'No suggestions available.';
+                suggestionsList.appendChild(listItem);
+            }
+        })
+        .catch(error => console.error('Error fetching AI suggestions:', error));
+}
+function fetchSuggestions(button) {
+    // Get the post ID from the button's data attribute
+    const postId = button.getAttribute('data-post-id');
+
+    fetch(`/comments/generatecomment/${postId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const suggestionsList = document.getElementById(`suggestions-${postId}`);
+            suggestionsList.innerHTML = '';
+
+            if (data.suggestions) {
+                data.suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.textContent = suggestion;
+                    suggestionsList.appendChild(li);
+                });
+            } else {
+                console.error(data.error || "No suggestions available");
+            }
+        })
+        .catch(error => console.error('Error fetching suggestions:', error));
+}
+
+            // Edit Reply
+    $('.edit-reply').on('click', function(e) {
+        e.preventDefault();
+        const replyId = $(this).data('id');
+        const replyContainer = $(this).closest('.reply');
+        const replyContent = replyContainer.find('.reply-content').text();
+
+        // Show edit input
+        replyContainer.find('.edit-reply-container').show();
+        replyContainer.find('.edit-reply-input').val(replyContent);
+        $(this).hide(); // Hide the edit link
+    });
+
+    // Save Edited Reply
+    $('.save-reply-edit').on('click', function() {
+        const replyId = $(this).data('id');
+        const updatedContent = $(this).siblings('.edit-reply-input').val();
+
+        $.ajax({
+            url: `/comments/replies/${replyId}/edit/`, // Adjust URL as per your Django setup
+            type: 'POST',
+            data: {
+                content: updatedContent,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(response) {
+                const replyContainer = $(`#reply-${replyId}`);
+                replyContainer.find('.reply-content').text(updatedContent);
+                replyContainer.find('.edit-reply-container').hide();
+                replyContainer.find('.edit-reply').show(); // Show edit link again
+            }
+        });
+    });
+
+    // Cancel Edit Reply
+    $('.cancel-reply-edit').on('click', function() {
+        const replyContainer = $(this).closest('.reply');
+        replyContainer.find('.edit-reply-container').hide();
+        replyContainer.find('.edit-reply').show(); // Show edit link again
+    });
+
+    // Delete Reply
+    $('.delete-reply').on('click', function(e) {
+        e.preventDefault();
+        const replyId = $(this).data('id');
+        const replyContainer = $(`#reply-${replyId}`);
+
+        $.ajax({
+            url: `/comments/replies/${replyId}/delete/`, // Adjust URL as per your Django setup
+            type: 'POST',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(response) {
+                replyContainer.remove(); // Remove the reply from the DOM
+            }
+        });
+    });
+          $(document).on('submit', '.reply-form', function(event) {
+        event.preventDefault();  // Prevent normal form submission
+        const form = $(this);
+        const commentId = form.attr('action').match(/(\d+)/)[0]; // Extract comment ID
+
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function(data) {
+                const newReplyHtml = `
+                    <div class="reply">
+                        <strong>${data.author}</strong>:
+                        <p>${data.content}</p>
+                        <small>${data.created_at}</small>
+                    </div>`;
+                // Append new reply to the comment's reply section
+                $('#comment-' + commentId).find('.replies').append(newReplyHtml);
+                form[0].reset();  // Reset the form
+            },
+            error: function(xhr, status, error) {
+                console.log("Error:", error);
+            }
+        });
+    });
+
+
+
+    $(document).ready(function() {
+        // Your other existing AJAX and event handler code...
+    });
+
+        $(document).ready(function() {
+            // AJAX submission for new post creation
+            $('#newPostForm').on('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+        
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'post_create' %}", // Update with the correct URL for creating a post
+                    data: $(this).serialize(), // Serialize the form data
+                    success: function(response) {
+                        // Append the new post to the posts container
+                        $('.posts').prepend(`
+                            <div class="post-card">
+                                <div class="post-header">
+                                    <div class="user-info">
+                                        <img src="{% static 'default_profile_pic.png' %}" alt="Default Profile Picture">
+                                        <div>
+                                            <h4>${response.author}</h4>
+                                            <div class="date">${response.created_at}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="post-content">
+                                    <h4>${response.title}</h4>
+                                    <p>${response.content}</p>
+                                </div>
+                            </div>
+                        `);
+        
+                        // Clear the form fields
+                        $('#title').val('');
+                        $('#content').val('');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log("Error:", error);
+                    }
+                });
+            });
+        
+            // AJAX submission for new comment creation
+            $(document).on('submit', '.comment-form', function(event) {
+    event.preventDefault();  // Prevent the form from submitting normally
+    const form = $(this);
+    $('#error-message').empty(); // Clear previous error messages
+    const postId = form.attr('action').match(/(\d+)/)[0]; // Extract post ID
+
+    console.log("Post ID:", postId); // Debugging log
+
+    $.ajax({
+        type: 'POST',
+        url: form.attr('action'),
+        data: form.serialize(),
+        success: function(data) {
+            console.log("New Comment Data:", data); // Debugging log
+            
+            // Add new comment to the comments section
+            const newCommentHtml = `
+                <div class="comment" id="comment-${data.id}">
+                    <strong>${data.author}</strong>:
+                    <p class="comment-content">${data.content}</p>
+                    <small>${new Date(data.created_at).toLocaleString()}</small>
+                    <a href="#" class="delete-comment" data-id="${data.id}">Delete</a>
+                    <a href="#" class="edit-comment" data-id="${data.id}">Edit</a>
+                </div>`;
+
+            // Append new comment to the comment section
+            $('#comments-' + postId + ' .comments').append(newCommentHtml);
+            form[0].reset();  // Reset the form
+        },
+        error: function(xhr) {
+            console.log("Full Error Response:", xhr.responseText); // Log the full error response for debugging
+            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                for (const [field, messages] of Object.entries(xhr.responseJSON.errors)) {
+                    messages.forEach(function(message) {
+                        $('#error-message').append(`<div>${field}: ${message}</div>`);
+                    });
+                }
+            } else {
+                $('#error-message').append('<div>An unexpected error occurred. Please try again.</div>');
+            }
+        }
+    });
+});
+
+            //delete
+            $(document).on('click', '.delete-comment', function(event) {
+        event.preventDefault();
+        const commentId = $(this).data('id');
+        const commentElement = $('#comment-' + commentId);
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'delete_comment' 0 %}".replace('0', commentId),
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function(response) {
+                if (response.success) {
+                    commentElement.remove(); // Remove the comment from DOM
+                } else {
+                    console.log("Failed to delete the comment.");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log("Error:", error);
+            }
+        });
+    });
+
+            // Show edit comment input on clicking edit button
+            $(document).on('click', '.edit-comment', function(event) {
+                event.preventDefault(); 
+                const commentId = $(this).data('id');
+                const commentElement = $('#comment-' + commentId);
+                commentElement.find('.edit-comment-container').show();
+                commentElement.find('.comment-content').hide(); // Hide the original content
+            });
+        
+            // Save the edited comment
+            $(document).on('click', '.save-edit', function(event) {
+    const commentId = $(this).data('id'); // Get the comment ID from the button
+    const commentElement = $('#comment-' + commentId);
+    const newContent = commentElement.find('.edit-comment-input').val();
+
+    // Construct the correct URL for the edit_comment view
+    const editUrl = `/comments/edit/${commentId}/`; // Adjust this based on your URL structure
+
+    $.ajax({
+        type: 'POST',
+        url: editUrl, // Use the constructed URL
+        data: {
+            content: newContent,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(data) {
+            commentElement.find('.comment-content').text(newContent).show(); // Update comment content
+            commentElement.find('.edit-comment-container').hide(); // Hide edit form
+        },
+        error: function(xhr, status, error) {
+            console.log("Error:", error);
+        }
+    });
+});
+
+            // Cancel editing comment
+            $(document).on('click', '.cancel-edit', function(event) {
+                const commentElement = $(this).closest('.comment');
+                commentElement.find('.edit-comment-container').hide(); // Hide edit form
+                commentElement.find('.comment-content').show(); // Show original content
+            });
+        });
+
+        function toggleDropdown(button) {
+            const dropdown = $(button).next('.dropdown');
+            dropdown.toggle();
+        }
+
+        function openModal(postId, postTitle) {
+            $('#deleteForm').attr('action', '/delete/' + postId + '/');
+            $('#postTitle').text(postTitle);
+            $('#deleteModal').show();
+        }
+
+        function closeModal() {
+            $('#deleteModal').hide();
+        }
+
+        $(document).ready(function() {
+    // Toggle emoji picker visibility within each post
+    $(document).on('click', '.emojiButton', function(event) {
+        const emojiPicker = $(this).closest('.add-comment').find('.emoji-picker'); // Scope to the nearest emoji picker
+        emojiPicker.toggle(); // Show/hide emoji picker
+
+        // Stop click from bubbling up to document
+        event.stopPropagation();
+    });
+
+    // Insert emoji into the specific input field when clicked
+    $(document).on('click', '.emoji', function() {
+        const emoji = $(this).data('emoji'); // Get the emoji from data attribute
+        const commentInput = $(this).closest('.add-comment').find('.comment-form #commentInput'); // Scope to the nearest input
+        commentInput.val(commentInput.val() + emoji); // Append emoji to the input field
+        $(this).closest('.emoji-picker').hide(); // Hide emoji picker after selection
+    });
+
+    // Close emoji picker if clicking outside of it
+    $(document).on('click', function(event) {
+        // Check if the click happened outside any emoji picker
+        if (!$(event.target).closest('.emoji-picker, .emojiButton').length) {
+            $('.emoji-picker').hide(); // Hide all emoji pickers
+        }
+    });
+});
+    </script>
+
+</main>
 {% endblock %}
