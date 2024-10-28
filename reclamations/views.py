@@ -8,6 +8,8 @@ from django.views.generic import ListView
 from django.views import View
 import os
 from transformers import pipeline
+from django.conf import settings
+import requests  
 
 class UserReclamationListView(LoginRequiredMixin, ListView):
     model = Reclamation
@@ -53,11 +55,7 @@ def delete_reclamation(request, pk):
     reclamation = get_object_or_404(Reclamation, pk=pk)
     reclamation.delete()
     return redirect('reclamation_list')
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .models import Reclamation, Response
-from .forms import ReclamationForm, ResponseForm
-from transformers import pipeline
+
 
 def respond_reclamation(request, pk):
     reclamation = get_object_or_404(Reclamation, pk=pk)
@@ -86,14 +84,41 @@ def respond_reclamation(request, pk):
         'responses': responses
     })
 
-
 def generate_response_suggestion(description):
-    # Set your Hugging Face token
-    os.environ["HUGGINGFACE_TOKEN"] = "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"
+    # Hugging Face API URL for gpt-neo-2.7B text generation
+    model_url = "https://api-inference.huggingface.co/models/EleutherAI/gpt-neo-2.7B"
     
-    # Initialize the pipeline
-    pipe = pipeline("text-generation", model="Qwen/Qwen2.5-1.5B-Instruct")
-    
-    # Generate response suggestion
-    suggestion = pipe(description, max_length=50, num_return_sequences=1)
-    return suggestion[0]['generated_text']
+    # Headers with Hugging Face API token
+    headers = {
+        "Authorization": f"Bearer {settings.HUGGING_FACE_API_KEY}"
+    }
+    prompt = "provide answer for this question : "+ description
+    # Payload for the API request
+    payload = {
+        "inputs": prompt,
+        "parameters": {
+            "max_length": 50,
+            "num_return_sequences": 1,
+            "temperature": 0.7,  # Adjust for creativity
+            "top_p": 0.9  # Adjust for diversity
+        }
+    }
+
+    try:
+        # Make the API request
+        response = requests.post(model_url, headers=headers, json=payload)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            result = response.json()
+            if result and isinstance(result, list) and len(result) > 0:
+                return result[0].get('generated_text', 'No suggestion available.')
+        else:
+            # Log or print error details for debugging
+            print(f"Error {response.status_code}: {response.json()}")
+
+    except requests.exceptions.RequestException as e:
+        # Handle request exceptions and print error
+        print(f"Request failed: {e}")
+
+    return "Unable to generate response suggestion."
