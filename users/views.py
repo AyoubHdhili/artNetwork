@@ -41,8 +41,11 @@ def login_view(request):
                     request.session['userphoto'] = user.user_photo.url if user.user_photo else None
                     if user.role == 'admin' and user.is_superuser and user.is_staff:
                         return redirect('/admin/') 
-                    else:
+                    if user.role == 'user':
                         return redirect('index')
+                    else :    
+                        return redirect('reclamations/support')
+ 
             else:
                 form.add_error(None, "invalid credentials or your account is not active.")
     else:

@@ -24,7 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=20, blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-    role = models.CharField(max_length=10, choices=[('admin', 'Admin'), ('user', 'User')])
+    role = models.CharField(max_length=10, choices=[('admin', 'Admin'), ('user', 'User'),('support','Support')])
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

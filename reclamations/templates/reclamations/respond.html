@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top] flex items-center justify-center flex-col">
+
+
+    <h2 class="text-2xl font-semibold mb-4">Respond to Reclamation</h2>
+
+    <div class="max-w-4xl w-full bg-white shadow-md rounded-lg p-6">
+        <h3 class="text-xl font-semibold mb-2">Title: {{ reclamation.title }}</h3>
+        <p class="mb-4"><strong>Made By:</strong> {{ reclamation.author.email }}</p>
+        <p class="mb-4"><strong>Description:</strong> {{ reclamation.description }}</p>
+
+        <h4 class="text-lg font-semibold mt-6 mb-2">Suggested Response</h4>
+        <p>{{ suggestion }}</p> <!-- Display the suggested response -->
+
+        <h4 class="text-lg font-semibold mt-6 mb-2">Previous Responses</h4>
+        <div class="mb-4">
+            {% for response in responses %}
+                <div class="border p-2 mb-2 rounded">
+                    <p><strong>Response:</strong> {{ response.content }}</p>
+                    <p><small>Submitted on: {{ response.created_at }}</small></p> <!-- Adjust this to your Response model's timestamp field -->
+                </div>
+            {% empty %}
+                <p>No responses yet.</p>
+            {% endfor %}
+        </div>
+
+
+        <h4 class="text-lg font-semibold mt-6 mb-2">Generate Suggested Response</h4>
+        <form method="POST" class="mb-4">
+            {% csrf_token %}
+            <input type="hidden" name="generate_response" value="true">
+            <button type="submit" class="inline-block px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">Generate Response</button>
+        </form>
+        
+        <h4 class="text-lg font-semibold mt-6 mb-2">Submit a Response</h4>
+        <form method="POST">
+            {% csrf_token %}
+            <textarea name="content" rows="4" cols="50" class="border rounded-md p-2 w-full" placeholder="Write your response here..." required>{{ suggestion }}</textarea>
+            <br>
+            <button type="submit" name="submit_response" class="mt-2 inline-block px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">Submit Response</button>
+        </form>
+        
+
+        <div class="mt-6">
+            <a href="{% url 'reclamation_list' %}" class="inline-block px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">Back to Reclamations</a>
+        </div>
+    </div>
+</main>
+{% endblock %}
