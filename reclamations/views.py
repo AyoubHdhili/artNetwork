@@ -10,7 +10,7 @@ import os
 from transformers import pipeline
 from django.conf import settings
 import requests  
-
+from django.contrib import messages
 class UserReclamationListView(LoginRequiredMixin, ListView):
     model = Reclamation
     template_name = 'reclamations/user_reclamations.html'

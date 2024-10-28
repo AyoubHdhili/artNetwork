@@ -36,7 +36,7 @@ def generate_image(request):
                     'image_data': image_data,
                 })
             except Exception as e:
-                return render(request, 'generate/generate_image.html', {
+                return render(request, 'generate/generate_image_post.html', {
                     'error': str(e),
                 })
-    return render(request, 'generate/generate_image.html')
+    return render(request, 'generate/generate_image_post.html')

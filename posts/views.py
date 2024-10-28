@@ -19,27 +19,26 @@ def index(request):
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
+    
 def post_list(request):
-    posts = Post.objects.all().order_by('-created_at')
-    form = CommentForm()  
-    return render(request, 'posts/post_list.html', {'posts': posts, 'form': form})
-    # Get all categories to display in the filter
+
     categories = Category.objects.all()
 
-    # Get selected category from the GET parameters
     selected_category = request.GET.get('category')
 
-    # Filter posts by the selected category if it exists, otherwise show all posts
     if selected_category:
         posts = Post.objects.filter(category__id=selected_category).order_by('-created_at')
     else:
         posts = Post.objects.all().order_by('-created_at')
 
+    form = CommentForm()  
     return render(request, 'posts/post_list.html', {
         'posts': posts,
         'categories': categories,
-        'selected_category': selected_category
+        'selected_category': selected_category,
+        'form': form  
     })
+
 
 
 def post_detail(request, pk):
