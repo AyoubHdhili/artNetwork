@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+IMAGE_TO_TEXT_URL = 'https://api-inference.huggingface.co/models/facebook/detr-resnet-50'
 
 
 HUGGING_FACE_API_KEY = os.getenv('HUGGING_FACE_API_KEY')
