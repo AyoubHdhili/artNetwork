@@ -1,15 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from .models import Post
+
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 
+from comments.forms import CommentForm 
 # Adding index view for completeness
 def index(request):
     return render(request, 'posts/index.html')
 
+
+
+
+
+
+
+# Create your views here.
+def index(request):
+    return render(request, 'index.html')
 def post_list(request):
     posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'posts/post_list.html', {'posts': posts})
+    form = CommentForm()  
+    return render(request, 'posts/post_list.html', {'posts': posts, 'form': form})
+
 
 def post_detail(request, pk):
     post = Post.objects.get(pk=pk)
@@ -49,9 +62,11 @@ def post_update(request, pk):
     else:
         form = PostForm(instance=post)
 
+
     return render(request, 'posts/post_update.html', {'post': post, 'form': form})
 
 @login_required
 def my_posts(request):
     posts = Post.objects.filter(author=request.user).order_by('-created_at')
     return render(request, 'posts/myPosts.html', {'posts': posts})
+

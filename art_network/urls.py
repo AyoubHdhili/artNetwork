@@ -25,6 +25,7 @@ urlpatterns = [
     path('events/',include('events.urls')),
     path('posts/',include('posts.urls')),
     path('Participation/',include('Participation.urls')),
+    path('comments/', include('comments.urls')), 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

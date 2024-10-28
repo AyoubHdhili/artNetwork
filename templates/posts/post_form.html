@@ -10,12 +10,15 @@
     <title>Create a New Post</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{% static 'css/posts/create.css' %}">
+
 </head>
 <body>
     <div class="form-container">
         <a href="javascript:history.back()" class="return-button"><i class="fas fa-arrow-left"></i> Return</a>
         <h1>Create a New Post</h1>
+
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="title">Title <span style="color: red;">*</span></label>
@@ -34,6 +37,7 @@
                 {% endfor %}
             </div>
 
+
             <label for="image">Upload Image</label>
             <input type="file" id="image" name="image" accept="image/*" class="form-file" onchange="previewImage(event)">
 
@@ -41,8 +45,11 @@
                 <p>Image Preview</p>
                 <img id="preview" src="" alt="Image Preview" style="max-width: 100%; border-radius: 10px; display: none;">
             </div>
+
+
             <div class="field-errors">
-                {% for error in form.image.errors %}
+                {% for error in form.non_field_errors %}
+
                     <p class="field-errors">{{ error }}</p>
                 {% endfor %}
             </div>

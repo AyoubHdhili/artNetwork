@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -24,7 +25,14 @@ IMAGE_TO_TEXT_URL = 'https://api-inference.huggingface.co/models/facebook/detr-r
 
 
 HUGGING_FACE_API_KEY = os.getenv('HUGGING_FACE_API_KEY')
+
+
 STABLE_DIFFUSION_URL = 'https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4'
+
+SECRET_KEY = 'django-insecure-=ez@!4hkmal+b62pvsjd^jobx&_hc9r+7p%kcmikcuul8i=5!7'
+
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -54,6 +62,7 @@ INSTALLED_APPS = [
     'users',  
     'events', 
     'Participation', 
+     'comments',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
