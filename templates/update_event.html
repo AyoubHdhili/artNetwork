@@ -57,7 +57,6 @@
             
             <div class="relative md:w-20 md:h-20 w-12 h-12 shrink-0">
                 <label for="file" class="cursor-pointer">
-                    <img id="img" src="" class="object-cover w-full h-full rounded-full" alt="User Photo"/>
                     <img id="imgevent" src="{% if event.image %}{{ MEDIA_URL }}{{ event.image }}{% else %}{% static 'images/avatars/avatar-3.jpg' %}{% endif %}" class="object-cover w-full h-full rounded-full" alt="Event Image Preview"/>
                     <input type="file" id="file" name="image" class="hidden" accept="image/*" onchange="previewImage(event)" />
                 </label>
@@ -68,8 +67,12 @@
                     </svg>
                 </label>
             </div>
-
+            {% if form.image.errors %}
+            <div class="text-red-500">{{ form.image.errors }}</div>
+        {% endif %}
+        <br>
             <button type="submit" class="button bg-primary text-white w-full">Create Event</button>
+            <br>
         </form>
     </div>
 </main>

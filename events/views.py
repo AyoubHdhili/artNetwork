@@ -5,6 +5,14 @@ from .forms import EventAddForm, EventUpdateForm
 from django.contrib import messages
 from django.conf import settings
 from Participation.models import Participation 
+from django.http import JsonResponse
+import requests
+import base64
+import os
+from PIL import Image
+import io
+from django.core.files.storage import default_storage
+from django.utils import timezone
 
 @login_required
 def create_event(request):
@@ -54,26 +62,114 @@ def delete_event(request, event_id):
     
     return redirect('event_list') 
 
+
 @login_required
 def event_list(request):
-    events = Event.objects.select_related('creator').all()  
+    events = Event.objects.select_related('creator').all()
+    current_date = timezone.now().date()
+    reserved_event_ids = set(
+        Participation.objects.filter(user=request.user).values_list('event_id', flat=True)
+    )
+    
+    for event in events:
+        event.is_reserved = event.id in reserved_event_ids
+        event.is_owner = event.creator.id == request.user.id
+
     return render(request, 'event_list.html', {
         'events': events,
-        'MEDIA_URL': settings.MEDIA_URL  
+        'MEDIA_URL': settings.MEDIA_URL ,
+        'current_date': current_date 
     })
+
 
 @login_required
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     is_owner = event.creator.id == request.user.id  
 
-   
+    
+    participation = Participation.objects.filter(user=request.user, event=event).first()
+    
+    is_reserved = participation is not None
+    participation_id = participation.id if participation else None
+    
     creator = event.creator  
     participant_count = event.participations.count()
+    
     return render(request, 'event_detail.html', {
         'event': event,
         'creator': creator, 
         'is_owner': is_owner,
+        'is_reserved': is_reserved,
+        'participation_id': participation_id,
         'participant_count': participant_count,
         'MEDIA_URL': settings.MEDIA_URL
     })
+
+@login_required
+def generate_image(request):
+    if request.method == 'POST':
+      
+        prompt = request.POST.get('prompt')
+        if not prompt:
+            return JsonResponse({'error': 'Prompt text is required'}, status=400)
+
+        headers = {
+            'Authorization': f'Bearer {settings.HUGGING_FACE_API_KEY}',
+            'Content-Type': 'application/json',
+        }
+        data = {
+            'inputs': prompt,
+        }
+
+       
+        response = requests.post(settings.STABLE_DIFFUSION_URL, headers=headers, json=data)
+
+        if response.status_code == 200:
+           
+            image_data = response.content  
+            image_url = "data:image/png;base64," + base64.b64encode(image_data).decode()
+
+            return JsonResponse({'image_url': image_url})
+        else:
+            return JsonResponse({'error': 'Error generating image'}, status=response.status_code)
+
+    return render(request, 'generate_image.html')
+@login_required
+def generate_text_from_image(request):
+    if request.method == 'POST':
+        image_file = request.FILES.get('image')
+        if not image_file:
+            return JsonResponse({'error': 'Image file is required'}, status=400)
+
+        image = Image.open(image_file)
+        buffered = io.BytesIO()
+        image.save(buffered, format="PNG") 
+        image_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+        headers = {
+            'Authorization': f'Bearer {settings.HUGGING_FACE_API_KEY}',
+            'Content-Type': 'application/json',
+        }
+
+        
+        url = "https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning"
+
+        data = {
+            'inputs': image_base64
+        }
+
+        response = requests.post(url, headers=headers, json=data)
+
+        if response.status_code == 200:
+            generated_texts = response.json() 
+            
+            if isinstance(generated_texts, list) and len(generated_texts) > 0:
+                return JsonResponse({'generated_text': generated_texts[0].get('generated_text', 'No text generated')})  
+            return JsonResponse({'error': 'No text generated from the provided image.'})
+        else:
+            error_message = response.json().get('error', 'An error occurred')
+            return JsonResponse({'error': error_message, 'status_code': response.status_code}, status=response.status_code)
+
+    return render(request, 'generate_image.html')
+

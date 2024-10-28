@@ -9,6 +9,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('toggle_user_status/<int:user_id>/', views.toggle_user_status, name='toggle_user_status'),
     path('profile/', views.update_user, name='update_user'),
+    path('profile2/', views.profile_view, name='profile_view'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

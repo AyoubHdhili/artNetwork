@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{% static "css/tailwind.css" %}">
     <link rel="stylesheet" href="{% static "css/style.css" %}">  
     
+    
     <!-- google font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -539,15 +540,15 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="pages.html">
-                                    <img src="{% static "images/icons/page.png" %}" alt="pages" class="w-6">
-                                    <span> Pages </span> 
+                                <a href="{% url 'generate_image' %}">
+                                    <img src="{% static "images/ai.jpg" %}" alt="pages" class="w-6">
+                                    <span> generate </span> 
                                 </a>
                             </li>
                             <li>
-                                <a href="groups.html">
-                                    <img src="{% static "images/icons/group.png" %}" alt="groups" class="w-6">
-                                    <span> Groups </span> 
+                                <a href="{% url 'user_participations' %}">
+                                    <img src="{% static "images/res.png" %}" alt="groups" class="w-6">
+                                    <span> My Participation </span> 
                                 </a>
                             </li>
                             <li>

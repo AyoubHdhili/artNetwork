@@ -6,7 +6,12 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .models import User
+import requests
 from django.conf import settings
+from django.contrib import messages
+import time
+from django.core.files.base import ContentFile
+
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -78,18 +83,29 @@ def update_user(request):
 
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, request.FILES, instance=user)
+
         if form.is_valid():
             form.save()
+            
           
+            if request.POST.get('generate_avatar'):
+                try:
+                    avatar_file = generate_avatar(user.fullname)
+                    
+                    if avatar_file:  
+                        user.user_photo.save(avatar_file.name, avatar_file)  
+                        user.save()
+                        messages.success(request, "Avatar généré avec succès!")
+                    else:
+                        messages.error(request, "Erreur lors de la génération de l'avatar.")  
+                except requests.ConnectionError:
+                    messages.error(request, "Erreur de connexion à l'API d'avatar.")  
+
             request.session['full_name'] = user.fullname
             request.session['userphoto'] = user.user_photo.url if user.user_photo else None
             
          
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            request.session['access_token'] = access_token 
-            
-            return redirect('update_user')  
+            return redirect('update_user') 
     else:
         form = UserUpdateForm(instance=user)  
 
@@ -100,3 +116,30 @@ def update_user(request):
     })
 
 
+def generate_avatar(name):
+   
+    encoded_name = name.replace(" ", "_")  
+    
+   
+    url = f"https://robohash.org/{encoded_name}.png" 
+    
+   
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+  
+        return ContentFile(response.content, name=f"{encoded_name}.png")
+    else:
+        return None 
+
+
+
+@login_required
+def profile_view(request):
+    user = request.user
+    form = UserUpdateForm(instance=user)
+    return render(request, 'ProfileFront.html', {
+        'form': form,
+        'user': user,
+        'MEDIA_URL': settings.MEDIA_URL  
+    })

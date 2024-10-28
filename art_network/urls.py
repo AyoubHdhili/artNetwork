@@ -23,8 +23,10 @@ urlpatterns = [
     path('',include('users.urls')),
     path('reclamations/',include('reclamations.urls')),
     path('events/',include('events.urls')),
-        path('posts/',include('posts.urls')),
-
+    path('posts/',include('posts.urls')),
+    path('Participation/',include('Participation.urls')),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+
+    
 
