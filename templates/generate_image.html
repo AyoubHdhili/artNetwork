@@ -34,6 +34,24 @@
                     </div>
                 </div>
             </div>
+
+            <!-- New Section for Generating Text from Image -->
+            <div class="section-divider"></div> <!-- Divider for visual separation -->
+
+            <div class="page-heading mt-10">
+                <h1 class="page-title">Image to Text 🖼️➡️📜</h1>
+                <p class="text-sm">Upload an image to generate descriptive text from it.</p>
+            </div>
+
+            <form id="imageForm2" onsubmit="submitForm(event)" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="image">Select an image:</label>
+                <input type="file" name="image" required class="custom-file-input">
+                <button type="submit" class="bg-white py-2 px-5 rounded-full shadow-md font-semibold text-sm dark:bg-dark2">Generate Text</button>
+            </form>
+
+            <h2 class="mt-4">Generated Text:</h2>
+            <div id="output"></div>
         </div>
         <div class="2xl:w-[380px] lg:w-[330px] w-full">
             <div class="lg:space-y-6 space-y-4 lg:pb-8">
@@ -50,8 +68,6 @@
             </div>
         </div>
     </div>
-
-    
 
     <script>
         const form = document.getElementById('imageForm');
@@ -85,27 +101,46 @@
             }
         });
 
-      
+        function submitForm(event) {
+            event.preventDefault(); 
+
+            const form = document.getElementById('imageForm2');
+            const formData = new FormData(form);
+
+            fetch("{% url 'generate_text_from_image' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.generated_text) {
+                    document.getElementById('output').innerText = data.generated_text;
+                } else {
+                    document.getElementById('output').innerText = data.error || 'Error generating text.';
+                }
+            })
+            .catch(error => {
+                document.getElementById('output').innerText = 'An error occurred: ' + error;
+            });
+        }
     </script>
+
     <style>
         .custom-file-input {
-    cursor: pointer; 
-}
+            cursor: pointer; 
+        }
 
-.custom-file-input:hover {
-    background-color: #f0f0f0; 
-}
+        .custom-file-input:hover {
+            background-color: #f0f0f0; 
+        }
 
-        .card-list-divider {
-    margin: 2rem auto; 
-    border: none;
-    border-top: 1px solid #e5e5e5; 
-    background: transparent;
-    width: 90%; 
-}
-        #js-oversized {
-            display: flex;
-            justify-content: space-between;
+        .section-divider {
+            margin: 2rem 0;
+            border-top: 1px solid #e5e5e5; 
+            background: transparent;
         }
 
         .loading-input {
