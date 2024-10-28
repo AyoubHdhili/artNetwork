@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     'events', 
     'Participation', 
      'comments',
+    'generator',
+    'category',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('users.urls')),
     path('reclamations/',include('reclamations.urls')),
+    path('generate/',include('generator.urls')),
     path('events/',include('events.urls')),
     path('posts/',include('posts.urls')),
     path('Participation/',include('Participation.urls')),

@@ -47,10 +47,10 @@ def login_view(request):
                     if user.role == 'admin' and user.is_superuser and user.is_staff:
                         return redirect('/admin/') 
                     if user.role == 'user':
-                        return redirect('index')
+                        return redirect('/posts')
                     else :    
                         return redirect('reclamations/support')
- 
+
             else:
                 form.add_error(None, "invalid credentials or your account is not active.")
     else:

@@ -1,11 +1,7 @@
 {% extends "index.html" %}
 {% load static %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<main>
     <br><br>
     <title>Create a New Post</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -13,8 +9,6 @@
 
     <link rel="stylesheet" href="{% static 'css/posts/create.css' %}">
 
-</head>
-<body>
     <div class="form-container">
         <a href="javascript:history.back()" class="return-button"><i class="fas fa-arrow-left"></i> Return</a>
         <h1>Create a New Post</h1>
@@ -22,7 +16,7 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="title">Title <span style="color: red;">*</span></label>
-            <input type="text" id="title" name="title" class="form-input" placeholder="Enter post title">
+            <input type="text" id="title" name="title" class="form-input" placeholder="Enter post title" required>
             <div class="field-errors">
                 {% for error in form.title.errors %}
                     <p class="field-errors">{{ error }}</p>
@@ -30,7 +24,7 @@
             </div>
 
             <label for="content">Content <span style="color: red;">*</span></label>
-            <textarea id="content" name="content" class="form-textarea" placeholder="What's on your mind?"></textarea>
+            <textarea id="content" name="content" class="form-textarea" placeholder="What's on your mind?" required></textarea>
             <div class="field-errors">
                 {% for error in form.content.errors %}
                     <p class="field-errors">{{ error }}</p>
@@ -50,6 +44,20 @@
             <div class="field-errors">
                 {% for error in form.non_field_errors %}
 
+                    <p class="field-errors">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Category Selection -->
+            <label for="category">Category <span style="color: red;">*</span></label>
+            <select id="category" name="category" class="form-select" required>
+                <option value="" disabled selected>Select a category</option> <!-- Placeholder -->
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <div class="field-errors">
+                {% for error in form.category.errors %}
                     <p class="field-errors">{{ error }}</p>
                 {% endfor %}
             </div>
@@ -79,4 +87,5 @@
             }
         }
     </script>
+</main>
 {% endblock %}

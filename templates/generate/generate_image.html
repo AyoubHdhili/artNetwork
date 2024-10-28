@@ -1,0 +1,108 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+<div class="ai-text-to-image-generator">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="card shadow p-4 mb-5 bg-white rounded" style="max-width: 500px; width: 100%;">
+            <h3 class="text-center mb-4" style="color: #0056b3;">AI Image Generator</h3>
+            <form method="post" onsubmit="showProgressBar()" autocomplete="off">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="prompt" class="form-label" style="font-weight: bold; color: #333;">Enter your prompt:</label>
+                    <input type="text" class="form-control" id="prompt" name="prompt" required placeholder="e.g., A futuristic city" style="background: #f9f9f9;">
+                </div>
+                <div class="mb-3">
+                    <label for="style" class="form-label" style="font-weight: bold; color: #333;">Select a style:</label>
+                    <select id="style" name="style" class="form-select" required>
+                        <option value="realistic">Realistic</option>
+                        <option value="cartoon">Cartoon</option>
+                        <option value="sketch">Sketch</option>
+                        <option value="abstract">Abstract</option>
+                        <option value="digital">Digital Art</option>
+                        <option value="oil painting">Oil Painting</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-generate btn-block">Generate Image</button>
+            </form>
+            <div class="progress mt-3" id="progress" style="display: none;">
+                <div class="progress-bar" style="height: 20px; width: 0%; background-color: #0056b3; transition: width 0.4s;"></div>
+            </div>
+            {% if error %}
+                <p class="error" style="color: #ff5252; margin-top: 10px; text-align: center;">Error: {{ error }}</p>
+            {% elif image_data %}
+                <div class="result mt-3 text-center">
+                    <h4 class="mt-3">Generated Image</h4>
+                    <img src="data:image/png;base64,{{ image_data }}" alt="Generated Image" style="max-width: 100%; border-radius: 6px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                    <p><strong>Prompt:</strong> {{ prompt }}</p>
+                    <p><strong>Style:</strong> {{ style }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .ai-text-to-image-generator {
+        font-family: 'Roboto', sans-serif;
+    }
+    .d-flex {
+        display: flex;
+    }
+    .justify-content-center {
+        justify-content: center;
+    }
+    .align-items-center {
+        align-items: center;
+    }
+    .progress-bar {
+        height: 20px;
+        background-color: #0056b3;
+        transition: width 0.4s;
+    }
+    .form-label {
+        font-weight: bold;
+        color: #333;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #0056b3;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 86, 179, 0.2);
+    }
+    .btn-generate {
+        background: linear-gradient(45deg, #0056b3, #003d99);
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 20px;
+        transition: background 0.3s, transform 0.2s;
+        font-size: 16px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .btn-generate:hover {
+        background: linear-gradient(45deg, #003d99, #0056b3);
+        transform: translateY(-2px);
+    }
+    .btn-generate:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<script>
+    function showProgressBar() {
+        const progressBarContainer = document.getElementById('progress');
+        const progressBar = document.querySelector('.progress-bar');
+        progressBarContainer.style.display = 'block';
+        let width = 0;
+        const interval = setInterval(() => {
+            if (width >= 100) {
+                clearInterval(interval);
+            } else {
+                width++;
+                progressBar.style.width = width + '%';
+            }
+        }, 30);
+    }
+</script>
+{% endblock %}
