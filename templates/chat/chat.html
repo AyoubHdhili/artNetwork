@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main id="site__main" class="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
+
+    <div class="relative overflow-hidden border -m-2.5 dark:border-slate-700">
+
+        <div class="flex bg-white dark:bg-dark2">
+
+            <!-- sidebar -->
+            <div class="md:w-[360px] relative border-r dark:border-slate-700">
+
+                <div id="side-chat" class="top-0 left-0 max-md:fixed max-md:w-5/6 max-md:h-screen bg-white z-50 max-md:shadow max-md:-translate-x-full dark:bg-dark2">
+
+                    <!-- heading title -->
+                    <div class="p-4 border-b dark:border-slate-700">
+                        
+                        <div class="flex mt-2 items-center justify-between">
+
+                            <h2 class="text-2xl font-bold text-black ml-1 dark:text-white"> Chats </h2>
+                                  
+                            <!-- right action buttons -->
+                            <div class="flex items-center gap-2.5">
+
+                                
+                                <a href="{% url 'new-groupchat' %}" title='create new group'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 max-sm:hidden">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                                      </svg>
+                                </a>
+
+                                <!-- mobile toggle menu -->
+                                <button type="button" class="md:hidden" uk-toggle="target: #side-chat ; cls: max-md:-translate-x-full" aria-expanded="true">
+                                    <ion-icon name="chevron-down-outline" role="img" class="md hydrated" aria-label="chevron down outline"></ion-icon>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <!-- search -->
+                        <div class="relative mt-4">
+                            <div class="absolute left-3 bottom-1/2 translate-y-1/2 flex"><ion-icon name="search" class="text-xl md hydrated" role="img" aria-label="search"></ion-icon></div>
+                            <input type="text" placeholder="Search" class="w-full !pl-10 !py-2 !rounded-lg">
+                        </div> 
+
+                    </div> 
+
+
+                    <!-- users list -->
+                    <div class="space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]" hx-get="{% url 'user_status' %}" hx-trigger="load, every 5s" hx-target="#user-status-container">
+                        <div id="user-status-container">
+                        {% for user in users %}
+                        {% if user.id != request.user.id %}
+                            <a href="{% url 'private_chat' user_id=user.id %}" class="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
+                                <div class="relative w-14 h-14 shrink-0"> 
+                                    <img src="{% static "images/avatars/avatar-5.jpg" %}" alt="" class="object-cover w-full h-full rounded-full">
+                                    {% if user.is_online %}
+                                        <div class="w-4 h-4 absolute bottom-0 right-0 bg-green-500 rounded-full border border-white dark:border-slate-800"></div>
+                                    {% else %}
+                                        <div class="w-4 h-4 absolute bottom-0 right-0 bg-gray-500 rounded-full border border-white dark:border-slate-800"></div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-1.5">
+                                        <div class="mr-auto text-sm text-black dark:text-white font-medium">{{ user.fullname }}</div>
+                                        <div class="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div> 
+                                    </div>
+                                    <div class="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">{{ user.role }}</div>
+                                </div>
+                            </a>
+                        {% endif %}
+                        {% endfor %}
+                        {% for group in groups %}
+                            <a href="{% url 'chat' chatroom_name=group.group_name %}" class="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondary">
+                                <div class="relative w-14 h-14 shrink-0">
+                                    <img src="{% static "images/avatars/avatar-5.jpg" %}" alt="" class="object-cover w-full h-full rounded-full">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-1.5">
+                                        <div class="mr-auto text-sm text-black dark:text-white font-medium">{{ group.group_name }}</div>
+                                    </div>
+                                    <div class="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">{{ group.description }}</div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+
+
+                    </div>
+
+                </div>
+                
+                <!-- overly -->
+                <div id="side-chat" class="bg-slate-100/40 backdrop-blur w-full h-full dark:bg-slate-800/40 z-40 fixed inset-0 max-md:-translate-x-full md:hidden" uk-toggle="target: #side-chat ; cls: max-md:-translate-x-full" tabindex="0" aria-expanded="true"></div>
+                
+            </div> 
+
+            <!-- message center -->
+            <div class="flex-1">
+
+                <!-- chat heading -->
+                <div class="flex items-center justify-between gap-2 w- px-6 py-3.5 z-10 border-b dark:border-slate-700 uk-animation-slide-top-medium">
+                
+                    <div class="flex items-center sm:gap-4 gap-2">
+
+                        <!-- toggle for mobile -->
+                        <button type="button" class="md:hidden" uk-toggle="target: #side-chat ; cls: max-md:-translate-x-full" aria-expanded="true">
+                            <ion-icon name="chevron-back-outline" class="text-2xl -ml-4 md hydrated" role="img" aria-label="chevron back outline"></ion-icon>
+                        </button>
+                        
+                        <div class="relative cursor-pointer max-md:hidden" uk-toggle="target: .rightt ; cls: hidden" tabindex="0" aria-expanded="true">
+                            <img src="{% static "images/avatars/avatar-5.jpg" %}" alt="" class="w-8 h-8 rounded-full shadow">
+                            
+                        </div>
+                        <div class="cursor-pointer" uk-toggle="target: .rightt ; cls: hidden" tabindex="0" aria-expanded="true">
+                            {% if chat_group %}
+                                <div class="text-base font-bold"> {{chat_group.group_name}} </div>
+                            {% else %}
+                                <div class="text-base font-bold"> {{user.fullname}}</div>
+                            {% endif %}
+                            
+                        </div>
+
+                    </div>  
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="button__ico">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
+                                <path fill-rule="evenodd" d="M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 006.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 011.767-1.052l3.223.716A1.5 1.5 0 0118 15.352V16.5a1.5 1.5 0 01-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 012.43 8.326 13.019 13.019 0 012 5V3.5z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <button type="button" class="hover:bg-slate-100 p-1.5 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"></path>
+                            </svg>
+                        </button> 
+                        {% if chat_group.admin == request.user %}
+                        <button type="button" class="hover:bg-slate-100 p-1.5 rounded-full" uk-toggle="target: .rightt ; cls: hidden" aria-expanded="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"></path>
+                              </svg> 
+                        </button> 
+                        {% endif %}
+                    </div>
+                
+                </div>
+                    
+                <!-- chats bubble -->
+                <div class="w-full p-5 py-10 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-195px)]" id='chat_container'>
+
+                    <div class="py-10 text-center text-sm lg:pt-8">
+                        <img src="{% static "images/avatars/avatar-5.jpg" %}" class="w-24 h-24 rounded-full mx-auto mb-3" alt="">
+                        <div class="mt-8">
+                            {% if chat_group %}
+                                <div class="md:text-xl text-base font-medium text-black dark:text-white"> {{chat_group.group_name}} </div>
+                                <div class="text-gray-500 text-sm   dark:text-white/80"> @{{chat_group.description}} </div>
+                            {% else %}
+                                <div class="md:text-xl text-base font-medium text-black dark:text-white"> {{user.fullname}} </div>
+                                <div class="text-gray-500 text-sm   dark:text-white/80"> @{{user.role}} </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    <div class="text-sm font-medium space-y-6" id="chat-messages">
+                        {% for message in chat_messages reversed %}
+                            {% include 'chat/chat_message.html' %}
+                        {% endfor %}
+                    </div>
+                    <div class="py-10 text-center text-sm lg:pt-8">
+                        <div class="mt-3.5">
+                            <div class="inline-block rounded-lg px-4 py-1.5 text-sm font-semibold bg-secondery" id="translation-output">
+                                {% if request.session.translated_text %}
+                                    <div class="translation">
+                                        <p>Translated: {{ request.session.translated_text }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+
+                </div> 
+
+                <!-- sending message area -->
+                <div class="flex items-center md:gap-4 gap-2 md:p-3 p-2 overflow-hidden">
+
+                    <div id="message__wrap" class="flex items-center gap-2 h-full dark:text-white -mt-1.5">
+                        
+                        <button type="button" class="shrink-0" aria-haspopup="true" aria-expanded="false">
+                            <ion-icon class="text-3xl flex md hydrated" name="add-circle-outline" role="img" aria-label="add circle outline"></ion-icon>
+                        </button>
+                        <div class="dropbar pt-36 h-60 bg-gradient-to-t via-white from-white via-30% from-30% dark:from-slate-900 dark:via-900 uk-drop" uk-drop="stretch: x; target: #message__wrap ;animation:  slide-bottom ;animate-out: true; pos: top-left; offset:10 ; mode: click ; duration: 200">
+
+                            <div class="sm:w-full p-3 flex justify-center gap-5" uk-scrollspy="target: > button; cls: uk-animation-slide-bottom-small; delay: 100;repeat:true">
+                               
+                                <button type="button" class="bg-sky-50 text-sky-600 border border-sky-100 shadow-sm p-2.5 rounded-full shrink-0 duration-100 hover:scale-[1.15] dark:bg-dark3 dark:border-0" style="opacity: 0;">
+                                    <ion-icon class="text-3xl flex md hydrated" name="image" role="img" aria-label="image"></ion-icon>
+                                </button>
+                                <button type="button" class="bg-green-50 text-green-600 border border-green-100 shadow-sm p-2.5 rounded-full shrink-0 duration-100 hover:scale-[1.15] dark:bg-dark3 dark:border-0" style="opacity: 0;">
+                                    <ion-icon class="text-3xl flex md hydrated" name="images" role="img" aria-label="images"></ion-icon>
+                                </button>
+                                <button type="button" class="bg-pink-50 text-pink-600 border border-pink-100 shadow-sm p-2.5 rounded-full shrink-0 duration-100 hover:scale-[1.15] dark:bg-dark3 dark:border-0" style="opacity: 0;">
+                                    <ion-icon class="text-3xl flex md hydrated" name="document-text" role="img" aria-label="document text"></ion-icon>
+                                </button>
+                                <button type="button" class="bg-orange-50 text-orange-600 border border-orange-100 shadow-sm p-2.5 rounded-full shrink-0 duration-100 hover:scale-[1.15] dark:bg-dark3 dark:border-0" style="opacity: 0;">
+                                    <ion-icon class="text-3xl flex md hydrated" name="gift" role="img" aria-label="gift"></ion-icon>
+                                </button>
+
+
+                            </div>
+                            
+                        </div>
+
+                        <button type="button" class="shrink-0" aria-haspopup="true" aria-expanded="false">
+                            <ion-icon class="text-3xl flex md hydrated" name="happy-outline" role="img" aria-label="happy outline"></ion-icon>
+                        </button>
+                        <div class="dropbar p-2 uk-drop" uk-drop="stretch: x; target: #message__wrap ;animation: uk-animation-scale-up uk-transform-origin-bottom-left ;animate-out: true; pos: top-left ; offset:2; mode: click ; duration: 200 ">
+
+                            <div class="sm:w-60 bg-white shadow-lg border rounded-xl  pr-0 dark:border-slate-700 dark:bg-dark3">
+
+                                <h4 class="text-sm font-semibold p-3 pb-0">Send Imogi</h4>
+
+                                <div class="grid grid-cols-5 overflow-y-auto max-h-44 p-3 text-center text-xl">
+
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😊 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🤩 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😎</div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥳 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😂 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥰 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😡 </div> 
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😊 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🤩 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😎</div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥳 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😂 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥰 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😡 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🤔 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😊 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🤩 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😎</div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥳 </div>
+                                    <div class="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😂 </div>
+                                  
+                                </div>
+                                 
+
+                            </div>
+                            
+                        </div>
+
+                    </div>
+                    
+                    <div class="relative flex-1">
+                        <form method="POST" hx-ext="ws" ws-connect="/ws/chatroom/{{chatroom_name}}" ws-send _="on htmx:wsAfterSend reset() me">
+                            {% csrf_token %}
+                            {{ form.body }} <!-- This will render the textarea -->
+                            <button type="submit" class="text-white shrink-0 p-2 absolute right-0.5 top-0">
+                                <ion-icon class="text-xl flex md hydrated" name="send-outline" role="img" aria-label="send outline"></ion-icon> 
+                            </button>
+                        </form>
+                    </div>
+
+                    <button type="button" class="flex h-full dark:text-white">
+                        <ion-icon class="text-3xl flex -mt-3 md hydrated" name="heart-outline" role="img" aria-label="heart outline"></ion-icon> 
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- user profile right info -->
+            <div class="rightt w-full h-full absolute top-0 right-0 z-10 hidden transition-transform">
+                <div class="w-[360px] border-l shadow-lg h-screen bg-white absolute right-0 top-0 uk-animation-slide-right-medium delay-200 z-50 dark:bg-dark2 dark:border-slate-700 overflow-y-auto"> <!-- Enable scrolling -->
+                    
+                    <div class="w-full h-1.5 bg-gradient-to-r to-purple-500 via-red-500 from-pink-500 -mt-px"></div>
+            
+                    <div class="py-10 text-center text-sm pt-20">
+                        <div class="md:text-xl text-base font-medium text-black dark:text-white">{{ chat_group.group_name }}</div>
+                        <div class="text-gray-500 text-sm mt-1 dark:text-white/80">@Group</div>
+                        {% if chat_group %}
+                        <form method="POST" action="{% url 'delete_chatgroup' chat_group.id %}">
+                            {% csrf_token %}
+                        <button type="submit" class="flex justify-center items-center gap-2 rounded-md p-3 w-full hover:bg-red-50 text-red-500 mt-5">
+                            <ion-icon name="trash-outline" class="text-2xl" aria-label="trash outline"></ion-icon> 
+                            Delete Chat
+                        </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    
+                    <hr class="opacity-80 dark:border-slate-700">
+                    {% if chat_group %}
+                    <!-- Form for editing the ChatGroup -->
+                    <form method="POST" action="{% url 'edit_chatgroup' chat_group.id %}">
+                        {% csrf_token %}
+                        <div class="p-3">
+                            {{ form_edit.group_name.label }}<br>
+                            {{ form_edit.group_name }}<br>
+                            
+                            {{ form_edit.description.label }}<br>
+                            {{ form_edit.description }}<br>
+
+                            <label for="members">Members:</label><br>
+                                {{ form_edit.members }}<br>
+                            
+                            
+                            <button type="submit" class="inline-block mt-4 rounded-full px-4 py-1.5 text-sm font-semibold bg-secondery z-50">Save Changes</button>
+                        </div>
+                    </form>
+                    {% endif %}
+            
+                </div>
+            
+                <!-- Overlay -->
+                <div class="bg-slate-100/40 backdrop-blur absolute w-full h-full dark:bg-slate-800/40" uk-toggle="target: .rightt ; cls: hidden" tabindex="0" aria-expanded="true"></div>
+            </div>
+            
+            
+        </div>
+
+    </div> 
+    
+</main>
+{% endblock %}
+
+{% block javascript %}
+<script>
+function scrollToBottom () {
+    const container = document.getElementById('chat_container');
+    container.scrollTop = container.scrollHeight;
+}
+scrollToBottom()
+</script>
+{% endblock %}

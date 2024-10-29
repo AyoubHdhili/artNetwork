@@ -10,7 +10,7 @@
     <link href="{% static "images/favicon.png" %}" rel="icon" type="image/png">
 
     <!-- title and description-->
-    <title>Socialite</title>
+    <title>Pixel Muse</title>
     <meta name="description" content="Socialite - Social sharing network HTML Template">
    
     <!-- css files -->
@@ -20,7 +20,10 @@
     
     <!-- google font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.tailwindcss.com" ></script>
+    <script src="https://unpkg.com/htmx.org" ></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13" ></script>
 </head>
 <body>
  
@@ -493,8 +496,8 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="messages.html">
-                                    <img src="{% static "images/icons/message.png" %}" alt="messages" class="w-5">
+                                <a href="{% url 'chat' chatroom_name='public-chat'%}">
+                                    <img src="{% static "images/icons/messages.png" %}" alt="messages" class="w-5">
                                     <span> messages </span> 
                                 </a>
                             </li> 
@@ -556,6 +559,6 @@
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
  
-
+    {% block javascript %}{% endblock %}
 </body>
 </html>

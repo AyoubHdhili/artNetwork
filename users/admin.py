@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import User
 from reclamations.models import Reclamation
+from chat.models import *
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'fullname', 'is_active_badge', 'role', 'is_staff')
 
@@ -43,3 +44,6 @@ class ReclamationAdmin(admin.ModelAdmin):
 
 admin.site.register(Reclamation, ReclamationAdmin)
 admin.site.register(User, UserAdmin)
+
+admin.site.register(ChatGroup)
+admin.site.register(GroupMessage)
