@@ -1,0 +1,37 @@
+{% load static %}
+
+{% for user in users %}
+    {% if user.id != request.user.id %}
+        <a href="{% url 'private_chat' user_id=user.id %}" class="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondary">
+            <div class="relative w-14 h-14 shrink-0"> 
+                <img src="{% static "images/avatars/avatar-5.jpg" %}" alt="" class="object-cover w-full h-full rounded-full">
+                {% if user.is_online %}
+                    <div class="w-4 h-4 absolute bottom-0 right-0 bg-green-500 rounded-full border border-white dark:border-slate-800"></div>
+                {% else %}
+                    <div class="w-4 h-4 absolute bottom-0 right-0 bg-gray-500 rounded-full border border-white dark:border-slate-800"></div>
+                {% endif %}
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1.5">
+                    <div class="mr-auto text-sm text-black dark:text-white font-medium">{{ user.fullname }}</div>
+                    <div class="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div> 
+                </div>
+                <div class="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">{{ user.role }}</div>
+            </div>
+        </a>
+    {% endif %}
+{% endfor %}
+{% for group in groups %}
+<a href="{% url 'chat' chatroom_name=group.group_name %}" class="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondary">
+    <div class="relative w-14 h-14 shrink-0">
+        <img src="{% static "images/avatars/avatar-5.jpg" %}" alt="" class="object-cover w-full h-full rounded-full">
+    </div>
+    <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1.5">
+            <div class="mr-auto text-sm text-black dark:text-white font-medium">{{ group.group_name }}</div>
+        </div>
+        <div class="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">{{ group.description }}</div>
+    </div>
+</a>
+{% endfor %}
+

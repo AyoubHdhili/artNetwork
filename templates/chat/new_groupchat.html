@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
+    <div class="max-w-3xl mx-auto">
+        <div class="box relative rounded-lg shadow-md">
+            {% if messages %}
+            <div class="p-4">
+                {% for message in messages %}
+                    <div {% if message.tags == 'success' %}class="bg-green-100 text-green-700 p-2 rounded mb-2" {% else %} class="bg-red-100 text-red-700 p-2 rounded mb-2"{% endif %}  {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+            <div class="flex md:gap-8 gap-4 items-center md:p-8 p-6 md:pb-4">
+                <div class="relative md:w-20 md:h-20 w-12 h-12 shrink-0"></div>
+                <div class="flex-1">
+                    <h3 class="md:text-xl text-base font-semibold text-black dark:text-white mx-auto"> Add new group chat </h3>
+                </div>
+            </div>
+
+            <div id="setting_tab" class="uk-switcher md:py-12 md:px-20 p-6 overflow-hidden text-black text-sm" style="touch-action: pan-y pinch-zoom;"> 
+                <!-- Tab user basic info -->
+                <div class="uk-active">
+                    <form method="POST" action="{% url 'new-groupchat' %}">
+                        {% csrf_token %}
+                        <div class="space-y-6">
+                            <div class="md:flex items-center gap-10">
+                                <label class="md:w-32 text-right"> Group Name </label>
+                                <div class="flex-1 max-md:mt-4">
+                                    {{ form.group_name }}
+                                    {% if form.group_name.errors %}
+                                        <div class="text-red-500">{{ form.group_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="md:flex items-start gap-10">
+                                <label class="md:w-32 text-right"> Description </label>
+                                <div class="flex-1 max-md:mt-4">
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="text-red-500">{{ form.description.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div> 
+
+                            <div class="md:flex items-center gap-10">
+                                <label class="md:w-32 text-right"> Admin </label>
+                                <div class="flex-1 max-md:mt-4">
+                                    {{ form.admin }}
+                                    {% if form.admin.errors %}
+                                    <div class="text-red-500 mt-5">{{ form.admin.errors }}</div>
+                                {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="md:flex items-center gap-10">
+                                <label class="md:w-32 text-right"> Members </label>
+                                <div class="flex-1 max-md:mt-4">
+                                    {{ form.members }}
+                                    {% if form.members.errors %}
+                                        <div class="text-red-500 mt-5">{{ form.members.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="flex items-center gap-4 mt-16 lg:pl-[10.5rem]">
+                            <button type="button" class="button lg:px-6 bg-secondery max-md:flex-1"> Cancel </button>
+                            <button type="submit" class="button lg:px-10 bg-primary text-white max-md:flex-1"> Save <span class="ripple-overlay"></span></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -49,6 +49,9 @@ AUTH_USER_MODEL = 'users.User'
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
+    'django_htmx',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -65,6 +68,7 @@ INSTALLED_APPS = [
      'comments',
     'generator',
     'category',
+    'chat',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -79,6 +83,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'art_network.urls'
@@ -99,8 +104,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'art_network.wsgi.application'
+#WSGI_APPLICATION = 'art_network.wsgi.application'
+ASGI_APPLICATION = 'art_network.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases

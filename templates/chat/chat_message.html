@@ -1,0 +1,29 @@
+{% load static %}
+{% if message.author == user %}
+<!-- received -->
+<div class="flex gap-3">
+    <img src="{% static "images/avatars/avatar-5.jpg" %}" alt="" class="w-9 h-9 rounded-full shadow">
+    <div class="px-4 py-2 rounded-[20px] max-w-sm bg-secondery"> {{ message.body }} </div>
+</div> 
+{% else %}
+<!-- sent -->
+<div class="flex flex-col items-end">
+    <div class="flex gap-2 flex-row-reverse items-end">
+        <img src="{% static 'images/avatars/avatar-5.jpg' %}" alt="" class="w-5 h-5 rounded-full shadow">
+        <div class="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow">
+            {{ message.body }}
+        </div>
+        <form method="POST" action="{% url 'translate_message' message.id %}" hx-post="{% url 'translate_message' message.id %}" hx-target="#translation-output" hx-swap="innerHTML">
+            {% csrf_token %}
+            <button type="submit" class="translate-btn">Translate</button>
+        </form>
+    </div>
+
+    <div class="text-gray-500 text-sm mt-1 dark:text-white/80">
+        @{{ message.author.fullname }}
+    </div>
+</div>
+{% endif %}
+
+<script>scrollToBottom()</script>
+ 
